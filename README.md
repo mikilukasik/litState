@@ -82,7 +82,7 @@ const Counter = component(
 
 ### Router and Link Components
 
-Use the Router and Link components for navigation:
+Use the Router and Link components with `navigate` Method:
 
 ```javascript
 const Home = () => html`
@@ -119,6 +119,14 @@ const App = () => html`
 `;
 
 mount(App(), container);
+```
+
+Use the `navigate` method to programmatically change routes:
+
+```javascript
+const goToAbout = () => {
+  navigate('/about');
+};
 ```
 
 ### License
