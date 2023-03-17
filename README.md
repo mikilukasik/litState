@@ -64,6 +64,22 @@ Modify the state to trigger a reactive render:
 state.counter = 1;
 ```
 
+### Using handlers
+
+Use the handler method to create and attach handlers to the html components
+
+```javascript
+const Counter = component(
+  () => html`
+    <div>
+      <h1>${state.counter}</h1>
+      <button onclick="${handler(() => state.counter++)}">Increment</button>
+      <button onclick="${handler(() => state.counter--)}">Decrement</button>
+    </div>
+  `
+);
+```
+
 ### Router and Link Components
 
 Use the Router and Link components for navigation:
