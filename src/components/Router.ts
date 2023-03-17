@@ -5,6 +5,11 @@ const state = createState({
   currentRoute: '/',
 });
 
+export const navigate = (to: string) => {
+  history.pushState(null, '', to);
+  state.currentRoute = to;
+};
+
 // Link component
 export const Link = component(
   ({ to, children }) => html`
@@ -12,8 +17,7 @@ export const Link = component(
       href="${to}"
       onclick="${handler(e => {
         e.preventDefault();
-        history.pushState(null, '', to);
-        state.currentRoute = to;
+        navigate(to);
       })}"
     >
       ${children}
