@@ -1,4 +1,5 @@
 import { createState, component, html, handler } from '..';
+import { Component } from '../types';
 
 // Create a state object to store the current route
 const state = createState({
@@ -17,7 +18,7 @@ export const Link = component(
       href="${to}"
       onclick="${handler(e => {
         e.preventDefault();
-        navigate(to);
+        navigate(to as string);
       })}"
     >
       ${children}
@@ -26,7 +27,7 @@ export const Link = component(
 );
 
 // Router component
-export const Router = component(({ routes }) => {
+export const Router = component(({ routes = {} }) => {
   const RouteComponent = routes[state.currentRoute] || routes['*'];
   return RouteComponent();
 });
