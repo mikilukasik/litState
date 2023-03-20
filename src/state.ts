@@ -15,14 +15,14 @@ export const addListener = <T>(listenerFunction: () => T): T => {
 export const createState = <T>(_stateTarget: T): T => {
   if (_stateTarget === null) return null as T;
 
-  let stateTarget: Record<string | symbol, any>;
+  let stateTarget: Record<string | number, any>;
 
   if (Array.isArray(_stateTarget)) {
     stateTarget = _stateTarget.map(val =>
       typeof val === 'object' ? createState(val) : val
-    ) as Record<string | symbol, any>;
+    ) as Record<string | number, any>;
   } else {
-    stateTarget = { ..._stateTarget } as Record<string | symbol, any>;
+    stateTarget = { ..._stateTarget } as Record<string | number, any>;
     Object.keys(stateTarget).forEach(key => {
       if (typeof stateTarget[key] === 'object') {
         stateTarget[key] = createState(stateTarget[key]);
@@ -30,37 +30,42 @@ export const createState = <T>(_stateTarget: T): T => {
     });
   }
 
-  const listenersSubscribedTo: Record<string | symbol, (() => void)[]> = {};
+  const listenersSubscribedTo: Record<string | number, (() => void)[]> = {};
 
-  const executeListeners = (prop: string | symbol) =>
+  const executeListeners = (prop: string | number) =>
     (listenersSubscribedTo[prop] || []).forEach(listener => listener());
 
   return new Proxy(stateTarget, {
     get: (target, prop) => {
+      const propStr = prop.toString();
       if (listenerBeingExecuted) {
         if (
-          !(listenersSubscribedTo[prop] || []).includes(listenerBeingExecuted)
+          !(listenersSubscribedTo[propStr] || []).includes(
+            listenerBeingExecuted
+          )
         ) {
-          if (!listenersSubscribedTo[prop]) listenersSubscribedTo[prop] = [];
-          listenersSubscribedTo[prop].push(listenerBeingExecuted);
+          if (!listenersSubscribedTo[propStr])
+            listenersSubscribedTo[propStr] = [];
+          listenersSubscribedTo[propStr].push(listenerBeingExecuted);
         }
       }
 
-      return target[prop];
+      return target[propStr];
     },
     set: (target, prop, value) => {
+      const propStr = prop.toString();
       if (typeof value === 'object' && value !== null) {
-        target[prop] = createState(
+        target[propStr] = createState(
           Array.isArray(value) ? value.slice() : { ...value }
         );
 
-        executeListeners(prop);
+        executeListeners(propStr);
         return true;
       }
 
-      target[prop] = value;
+      target[propStr] = value;
 
-      executeListeners(prop);
+      executeListeners(propStr);
       return true;
     },
   }) as T;

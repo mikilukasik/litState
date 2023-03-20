@@ -1,10 +1,10 @@
-import { Component } from './types';
+import { Component, PropsWithId } from './types';
 
 export const LITSTATE: {
-  handlersPerComponent: Record<string, Record<string | symbol, any>>;
-  components: Record<string | symbol, Component>;
-  componentsCurrentProps: Record<string | symbol, Record<string | symbol, any>>;
-  elementsWithIds: Record<string | symbol, HTMLElement>;
+  handlersPerComponent: Record<string, Record<string | number, any>>;
+  components: Record<string | number, Component>;
+  componentsCurrentProps: Record<string | number, PropsWithId>;
+  elementsWithIds: Record<string | number, HTMLElement>;
   listenerBeingExecuted: (() => void) | null;
   componentBeingRendered: string | number | null;
 } = {

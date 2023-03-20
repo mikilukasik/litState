@@ -27,9 +27,9 @@ export const Link = component(
 );
 
 // Router component
-export const Router = component(({ routes = {} }) => {
+export const Router = component(({ routerId, routes = {} }) => {
   const RouteComponent = routes[state.currentRoute] || routes['*'];
-  return RouteComponent();
+  return RouteComponent(`${routerId}/${state.currentRoute}`);
 });
 
 // Set up an event listener for the browser's popstate event

@@ -1,25 +1,37 @@
 import { renderComponent } from './renderComponent';
-import { Component, ObjectWithOptionalId } from './types';
+import {
+  Component,
+  ComponentDefiner,
+  ObjectWithOptionalId,
+  PropsWithId,
+} from './types';
 
 export const component = (
-  functionalComponent: Component,
+  functionalComponent: ComponentDefiner,
   attributes?:
     | ObjectWithOptionalId
     | ((props: Record<string, unknown>) => ObjectWithOptionalId)
-): ((props?: Record<string, unknown>) => string) => {
-  return (props = {}) => {
+): Component => {
+  const renderer: Component = (id, _props) => {
+    if (!id) throw new Error(`component called without id`);
+
+    const props: PropsWithId = { ..._props, id };
+
     const pharsedAttributes: ObjectWithOptionalId = attributes
       ? typeof attributes === 'object'
         ? attributes
         : attributes(props)
       : {};
 
-    const id = Math.random().toString().replace('0.', 'lsComponent');
+    const renderedString = renderComponent(
+      id,
+      functionalComponent,
+      props,
+      pharsedAttributes
+    );
 
-    const renderedString = renderComponent(id, functionalComponent, props);
-
-    return `<span id="${id}" ${Object.keys(pharsedAttributes)
-      .map(key => `${key}="${pharsedAttributes[key]}"`)
-      .join(' ')}>${renderedString}</span>`;
+    return renderedString;
   };
+
+  return renderer;
 };

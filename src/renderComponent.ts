@@ -1,29 +1,31 @@
 import { LITSTATE } from './global';
 import { addListener } from './state';
-import { Component } from './types';
-import { updateComponentInDom } from './updateComponentInDom';
+import { ComponentDefiner, PropsWithId } from './types';
+import { recursivelyUpdateComponentInDom } from './recursivelyUpdateComponentInDom';
+
+const currentPropsProxy = LITSTATE.componentsCurrentProps;
 
 export const renderComponent = (
-  id: string,
-  component: Component,
-  props: Record<string, unknown>
+  id: string | number,
+  component: ComponentDefiner,
+  props: PropsWithId,
+  pharsedAttributes: Record<string, unknown>
 ) => {
-  LITSTATE.componentsCurrentProps[id] = props;
+  const parentId = LITSTATE.componentBeingRendered;
+  LITSTATE.componentBeingRendered = id;
 
   const renderedString = addListener(() => {
-    const parentId = LITSTATE.componentBeingRendered;
-    LITSTATE.componentBeingRendered = id;
+    const renderedString = `<span id="${id}" ${Object.keys(pharsedAttributes)
+      .map(key => `${key}="${pharsedAttributes[key]}"`)
+      .join(' ')}>${component(props || currentPropsProxy[id])}</span>`;
 
-    const renderedString = component(LITSTATE.componentsCurrentProps[id]);
+    LITSTATE.componentsCurrentProps[id] = props;
 
-    LITSTATE.componentBeingRendered = parentId;
-
-    const componentInDom = document.getElementById(id);
-    if (!componentInDom) return renderedString;
-
-    updateComponentInDom(componentInDom, renderedString);
+    recursivelyUpdateComponentInDom(id.toString(), renderedString);
     return renderedString;
   });
+
+  LITSTATE.componentBeingRendered = parentId;
 
   return renderedString;
 };

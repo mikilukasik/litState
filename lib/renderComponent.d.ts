@@ -1,2 +1,2 @@
-import { Component } from './types';
-export declare const renderComponent: (id: string, component: Component, props: Record<string, unknown>) => string;
+import { ComponentDefiner, PropsWithId } from './types';
+export declare const renderComponent: (id: string | number, component: ComponentDefiner, props: PropsWithId, pharsedAttributes: Record<string, unknown>) => string;
