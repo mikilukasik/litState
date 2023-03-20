@@ -14,5 +14,5 @@ export const handler: (
     elm: HTMLElement
   ) => handlerToDefine(event, elm);
 
-  return `window.LITSTATE.handlersPerComponent.${componentId}.${handlerId}(event, this)`;
+  return `window.LITSTATE.handlersPerComponent['${componentId}']['${handlerId}'](event, this)`;
 };
