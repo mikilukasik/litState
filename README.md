@@ -4,7 +4,7 @@ LitState is a small and convenient frontend framework for building reactive web 
 
 ## Features
 
-- Easy state management with reactive rendering
+- Effortless state management with reactive rendering
 - Router and Link components for seamless navigation
 - Minimalistic and lightweight
 - Highly customizable
@@ -53,7 +53,7 @@ Mount a component into an HTML container:
 
 ```javascript
 const container = document.getElementById('app');
-mount(Counter({ label: 'Counter: ' }), container);
+mount(Counter('counter-1', { label: 'Counter: ' }), container);
 ```
 
 ### Updating State
@@ -88,14 +88,14 @@ Use the Router and Link components with `navigate` Method:
 const Home = () => html`
   <div>
     <h1>Home</h1>
-    ${Link({ to: '/about', children: 'Go to About' })}
+    ${Link('link-to-about', { to: '/about', children: 'Go to About' })}
   </div>
 `;
 
 const About = () => html`
   <div>
     <h1>About</h1>
-    ${Link({ to: '/', children: 'Go to Home' })}
+    ${Link('link-to-home', { to: '/', children: 'Go to Home' })}
   </div>
 `;
 
@@ -106,9 +106,9 @@ const Header = ({ title }) => html`
 `;
 
 const App = () => html`
-  <div>${Header({ title: 'Hello world!' })}</div>
+  <div>${Header('app-header', { title: 'Hello world!' })}</div>
   <div>
-    ${Router({
+    ${Router('app-router', {
       routes: {
         '/': Home,
         '/about': About,
@@ -118,7 +118,7 @@ const App = () => html`
   </div>
 `;
 
-mount(App(), container);
+mount(App('main-app'), container);
 ```
 
 Use the `navigate` method to programmatically change routes:
