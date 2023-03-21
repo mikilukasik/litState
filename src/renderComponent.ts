@@ -23,7 +23,7 @@ export const renderComponent = (
 
     recursivelyUpdateComponentInDom(id.toString(), renderedString);
     return renderedString;
-  });
+  }, `renderListener-${id}`);
 
   LITSTATE.componentBeingRendered = parentId;
 

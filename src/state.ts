@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-let listenerBeingExecuted: (() => void) | null = null;
+let listenerBeingExecuted: string | null = null;
+const listenersById: Record<string, () => void> = {};
 
-export const addListener = <T>(listenerFunction: () => T): T => {
+export const addListener = <T>(listenerFunction: () => T, id: string): T => {
   const parentListener = listenerBeingExecuted;
-  listenerBeingExecuted = listenerFunction;
+  listenerBeingExecuted = id;
 
+  listenersById[id] = listenerFunction;
   const result = listenerFunction();
 
   listenerBeingExecuted = parentListener;
@@ -30,15 +32,18 @@ export const createState = <T>(_stateTarget: T): T => {
     });
   }
 
-  const listenersSubscribedTo: Record<string | number, (() => void)[]> = {};
+  const listenersSubscribedTo: Record<string | number, string[]> = {};
 
   const executeListeners = (prop: string | number) =>
-    (listenersSubscribedTo[prop] || []).forEach(listener => listener());
+    (listenersSubscribedTo[prop] || []).forEach(listenerId =>
+      listenersById[listenerId]()
+    );
 
   return new Proxy(stateTarget, {
     get: (target, prop) => {
       const propStr = prop.toString();
       if (listenerBeingExecuted) {
+        // console.log(listenerBeingExecuted.toString());
         if (
           !(listenersSubscribedTo[propStr] || []).includes(
             listenerBeingExecuted
@@ -47,7 +52,8 @@ export const createState = <T>(_stateTarget: T): T => {
           if (!listenersSubscribedTo[propStr])
             listenersSubscribedTo[propStr] = [];
           listenersSubscribedTo[propStr].push(listenerBeingExecuted);
-        }
+          console.log(listenersSubscribedTo[propStr].length);
+        } else console.log('did not subscribe');
       }
 
       return target[propStr];
