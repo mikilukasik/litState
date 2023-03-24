@@ -43,7 +43,6 @@ export const createState = <T>(_stateTarget: T): T => {
     get: (target, prop) => {
       const propStr = prop.toString();
       if (listenerBeingExecuted) {
-        // console.log(listenerBeingExecuted.toString());
         if (
           !(listenersSubscribedTo[propStr] || []).includes(
             listenerBeingExecuted
@@ -52,8 +51,7 @@ export const createState = <T>(_stateTarget: T): T => {
           if (!listenersSubscribedTo[propStr])
             listenersSubscribedTo[propStr] = [];
           listenersSubscribedTo[propStr].push(listenerBeingExecuted);
-          console.log(listenersSubscribedTo[propStr].length);
-        } else console.log('did not subscribe');
+        } 
       }
 
       return target[propStr];
