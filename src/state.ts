@@ -17,7 +17,9 @@ export const addListener = <T>(listenerFunction: () => T, id: string): T => {
 
 export const batchUpdate = (updater:()=>void)=>{
   listenersOnHold = [];
+
   updater();
+
   listenersOnHold.forEach(l => l());
   listenersOnHold = null;
 }
