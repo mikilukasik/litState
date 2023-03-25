@@ -17,17 +17,11 @@ export const component = (
 
     const props: PropsWithId = { ..._props, id };
 
-    const pharsedAttributes: ObjectWithOptionalId = attributes
-      ? typeof attributes === 'object'
-        ? attributes
-        : attributes(props)
-      : {};
-
     const renderedString = renderComponent(
       id,
       functionalComponent,
       props,
-      pharsedAttributes
+      attributes
     );
 
     return renderedString;

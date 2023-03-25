@@ -5,7 +5,7 @@ export type PropsWithId = Props & { id: string | number };
 // export type Component = (id: string, props: Props) => string;
 
 export type ObjectWithOptionalId = {
-  [key: string]: unknown;
+  [key: string]: any;
   id?: string;
 };
 
