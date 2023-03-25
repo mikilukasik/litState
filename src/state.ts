@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 let listenerBeingExecuted: string | null = null;
 const listenersById: Record<string, () => void> = {};
+let listenersOnHold: (()=>void)[] | null = null;
 
 export const addListener = <T>(listenerFunction: () => T, id: string): T => {
   const parentListener = listenerBeingExecuted;
@@ -13,6 +14,13 @@ export const addListener = <T>(listenerFunction: () => T, id: string): T => {
 
   return result;
 };
+
+export const batchUpdate = (updater:()=>void)=>{
+  listenersOnHold = [];
+  updater();
+  listenersOnHold.forEach(l => l());
+  listenersOnHold = null;
+}
 
 export const createState = <T>(_stateTarget: T): T => {
   if (_stateTarget === null) return null as T;
@@ -63,13 +71,27 @@ export const createState = <T>(_stateTarget: T): T => {
           Array.isArray(value) ? value.slice() : { ...value }
         );
 
-        executeListeners(propStr);
+        if (listenersOnHold) {
+          listenersOnHold.push(()=>{
+            executeListeners(propStr);
+          });
+        } else {
+          executeListeners(propStr);
+        }
+
         return true;
       }
 
       target[propStr] = value;
 
-      executeListeners(propStr);
+      if (listenersOnHold) {
+        listenersOnHold.push(()=>{
+          executeListeners(propStr);
+        });
+      } else {
+        executeListeners(propStr);
+      }
+
       return true;
     },
   }) as T;

@@ -74,7 +74,13 @@ const updateDomElement = (source: ChildNode, target: ChildNode): void => {
       if (childIndexToRemove < 0)
         throw new Error('couldnt find childnode to remove');
 
-      target.removeChild(targetChildren[childIndexToRemove]);
+      try{
+        target.removeChild(targetChildren[childIndexToRemove]);
+      } catch(e){
+        // todo: should swallow?
+        console.warn(e)
+      }
+
       targetChildren.splice(childIndexToRemove, 1);
     }
 
