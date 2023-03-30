@@ -6,14 +6,21 @@ import {
   PropsWithId,
 } from './types';
 
+const getComponentInstanceIdFromStack = () =>
+  new Error().stack
+    ?.split('\n')[3]
+    .split(' ')
+    .pop()
+    ?.replace(window.location.href, '') || 'unknown-caller';
+
 export const component = (
   functionalComponent: ComponentDefiner,
   attributes?:
     | ObjectWithOptionalId
     | ((props: Record<string, unknown>) => ObjectWithOptionalId)
 ): Component => {
-  const renderer: Component = (id, _props) => {
-    if (!id) throw new Error(`component called without id`);
+  const renderer: Component = (_props = {}) => {
+    const id = _props.id || getComponentInstanceIdFromStack();
 
     const props: PropsWithId = { ..._props, id };
 

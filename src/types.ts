@@ -11,6 +11,6 @@ export type ObjectWithOptionalId = {
 
 export type HTMLElementsById = Record<string, HTMLElement>;
 
-export type Component = (id: string | number, props?: Props) => string;
+export type Component = (props?: Props) => string;
 
 export type ComponentDefiner = (props: PropsWithId) => string;

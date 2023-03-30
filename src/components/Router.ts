@@ -1,5 +1,4 @@
 import { createState, component, html, handler } from '..';
-import { Component } from '../types';
 
 // Create a state object to store the current route
 const state = createState({
@@ -27,9 +26,9 @@ export const Link = component(
 );
 
 // Router component
-export const Router = component(({ routerId, routes = {} }) => {
+export const Router = component(({ routes = {} }) => {
   const RouteComponent = routes[state.currentRoute] || routes['*'];
-  return RouteComponent(`${routerId}/${state.currentRoute}`);
+  return RouteComponent(state.currentRoute.replace(/\//g, '.'));
 });
 
 // Set up an event listener for the browser's popstate event

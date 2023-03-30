@@ -13,29 +13,32 @@ export const renderComponent = (
     | ObjectWithOptionalId
     | ((props: Record<string, unknown>) => ObjectWithOptionalId)
 ) => {
-  const parentId = LITSTATE.componentBeingRendered;
-  LITSTATE.componentBeingRendered = id;
+  const componentId = `${LITSTATE.componentBeingRendered || ''}/${id}`;
 
   const parsedAttributes: ObjectWithOptionalId = attributes
-      ? typeof attributes === 'object'
-        ? attributes
-        : attributes(props)
-      : {};
-
-  if (parsedAttributes.class&&parsedAttributes.class.startsWith('board-container'))console.log(parsedAttributes)
+    ? typeof attributes === 'object'
+      ? attributes
+      : attributes(props)
+    : {};
 
   const renderedString = addListener(() => {
-    const renderedString = `<span id="${id}" ${Object.keys(parsedAttributes)
+    const parentId = LITSTATE.componentBeingRendered;
+    LITSTATE.componentBeingRendered = componentId;
+
+    const renderedString = `<span id="${componentId}" ${Object.keys(
+      parsedAttributes
+    )
       .map(key => `${key}="${parsedAttributes[key]}"`)
-      .join(' ')}>${component(props || currentPropsProxy[id])}</span>`;
+      .join(' ')}>${component(props || currentPropsProxy[componentId])}</span>`;
 
-    LITSTATE.componentsCurrentProps[id] = props;
+    LITSTATE.componentsCurrentProps[componentId] = props;
 
-    recursivelyUpdateComponentInDom(id.toString(), renderedString);
+    recursivelyUpdateComponentInDom(componentId.toString(), renderedString);
+
+    LITSTATE.componentBeingRendered = parentId;
+
     return renderedString;
-  }, `renderListener-${id}`);
-
-  LITSTATE.componentBeingRendered = parentId;
+  }, `renderListener-${componentId}`);
 
   return renderedString;
 };
