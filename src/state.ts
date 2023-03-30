@@ -1,7 +1,10 @@
+import { LITSTATE } from './global';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-let listenerBeingExecuted: string | null = null;
+const componentStates: { [key: string]: any } = {};
 const listenersById: Record<string, () => void> = {};
-let listenersOnHold: (()=>void)[] | null = null;
+let listenerBeingExecuted: string | null = null;
+let listenersOnHold: (() => void)[] | null = null;
 
 export const addListener = <T>(listenerFunction: () => T, id: string): T => {
   const parentListener = listenerBeingExecuted;
@@ -15,16 +18,26 @@ export const addListener = <T>(listenerFunction: () => T, id: string): T => {
   return result;
 };
 
-export const batchUpdate = (updater:()=>void)=>{
+export const batchUpdate = (updater: () => void) => {
   listenersOnHold = [];
 
   updater();
 
   listenersOnHold.forEach(l => l());
   listenersOnHold = null;
-}
+};
 
 export const createState = <T>(_stateTarget: T): T => {
+  if (!LITSTATE.componentBeingRendered) return createNewState(_stateTarget);
+  if (componentStates[LITSTATE.componentBeingRendered])
+    return componentStates[LITSTATE.componentBeingRendered] as T;
+
+  componentStates[LITSTATE.componentBeingRendered] =
+    createNewState(_stateTarget);
+  return componentStates[LITSTATE.componentBeingRendered];
+};
+
+const createNewState = <T>(_stateTarget: T): T => {
   if (_stateTarget === null) return null as T;
 
   let stateTarget: Record<string | number, any>;
@@ -54,7 +67,7 @@ export const createState = <T>(_stateTarget: T): T => {
       const propStr = prop.toString();
       if (listenerBeingExecuted && propStr !== 'constructor') {
         if (
-          // TODO: figure out how constructor makes it here and errors 
+          // TODO: figure out how constructor makes it here and errors
           !(listenersSubscribedTo[propStr] || []).includes(
             listenerBeingExecuted
           )
@@ -62,20 +75,22 @@ export const createState = <T>(_stateTarget: T): T => {
           if (!listenersSubscribedTo[propStr])
             listenersSubscribedTo[propStr] = [];
           listenersSubscribedTo[propStr].push(listenerBeingExecuted);
-        } 
+        }
       }
 
       return target[propStr];
     },
     set: (target, prop, value) => {
       const propStr = prop.toString();
+      if (target[propStr] === value) return true;
+
       if (typeof value === 'object' && value !== null) {
         target[propStr] = createState(
           Array.isArray(value) ? value.slice() : { ...value }
         );
 
         if (listenersOnHold) {
-          listenersOnHold.push(()=>{
+          listenersOnHold.push(() => {
             executeListeners(propStr);
           });
         } else {
@@ -88,7 +103,7 @@ export const createState = <T>(_stateTarget: T): T => {
       target[propStr] = value;
 
       if (listenersOnHold) {
-        listenersOnHold.push(()=>{
+        listenersOnHold.push(() => {
           executeListeners(propStr);
         });
       } else {
