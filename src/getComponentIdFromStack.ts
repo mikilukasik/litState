@@ -1,6 +1,15 @@
-export const getComponentIdFromStack = () =>
-  new Error().stack
-    ?.split('\n')[3]
-    .split(' ')
-    .pop()
-    ?.replace(window.location.href, '') || 'unknown-caller';
+export const getComponentIdFromStack = () => {
+  const { stack } = new Error();
+
+  return (
+    [2, 3]
+      .map(row =>
+        stack
+          ?.split('\n')
+          [row].split(' ')
+          .pop()
+          ?.replace(window.location.href, '')
+      )
+      .join('') || 'unknown-caller'
+  );
+};
