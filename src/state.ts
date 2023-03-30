@@ -52,8 +52,9 @@ export const createState = <T>(_stateTarget: T): T => {
   return new Proxy(stateTarget, {
     get: (target, prop) => {
       const propStr = prop.toString();
-      if (listenerBeingExecuted) {
+      if (listenerBeingExecuted && propStr !== 'constructor') {
         if (
+          // TODO: figure out how constructor makes it here and errors 
           !(listenersSubscribedTo[propStr] || []).includes(
             listenerBeingExecuted
           )
