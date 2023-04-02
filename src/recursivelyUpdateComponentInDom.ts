@@ -77,8 +77,7 @@ const updateDomElement = (source: ChildNode, target: ChildNode): void => {
       try{
         target.removeChild(targetChildren[childIndexToRemove]);
       } catch(e){
-        // todo: should swallow?
-        console.warn(e)
+        // console.warn(e)
       }
 
       targetChildren.splice(childIndexToRemove, 1);
