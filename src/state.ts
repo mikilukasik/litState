@@ -4,7 +4,7 @@ import { LITSTATE } from './global';
 const componentStates: { [key: string]: any } = {};
 const listenersById: Record<string, () => void> = {};
 let listenerBeingExecuted: string | null = null;
-let listenersOnHold: (() => void)[] | null = null;
+let listenersOnHold: { [key: string]: () => void } | null = null;
 
 export const addListener = <T>(listenerFunction: () => T, id: string): T => {
   const parentListener = listenerBeingExecuted;
@@ -19,11 +19,11 @@ export const addListener = <T>(listenerFunction: () => T, id: string): T => {
 };
 
 export const batchUpdate = (updater: () => void) => {
-  listenersOnHold = [];
+  listenersOnHold = {};
 
   updater();
 
-  listenersOnHold.forEach(l => l());
+  Object.values(listenersOnHold).forEach(l => l());
   listenersOnHold = null;
 };
 
@@ -58,9 +58,14 @@ const createNewState = <T>(_stateTarget: T): T => {
   const listenersSubscribedTo: Record<string | number, string[]> = {};
 
   const executeListeners = (prop: string | number) =>
-    (listenersSubscribedTo[prop] || []).forEach(listenerId =>
-      listenersById[listenerId]()
-    );
+    (listenersSubscribedTo[prop] || []).forEach(listenerId => {
+      if (listenersOnHold) {
+        listenersOnHold[listenerId] = listenersById[listenerId];
+        return;
+      }
+
+      listenersById[listenerId]();
+    });
 
   return new Proxy(stateTarget, {
     get: (target, prop) => {
@@ -88,28 +93,11 @@ const createNewState = <T>(_stateTarget: T): T => {
         target[propStr] = createState(
           Array.isArray(value) ? value.slice() : { ...value }
         );
-
-        if (listenersOnHold) {
-          listenersOnHold.push(() => {
-            executeListeners(propStr);
-          });
-        } else {
-          executeListeners(propStr);
-        }
-
-        return true;
-      }
-
-      target[propStr] = value;
-
-      if (listenersOnHold) {
-        listenersOnHold.push(() => {
-          executeListeners(propStr);
-        });
       } else {
-        executeListeners(propStr);
+        target[propStr] = value;
       }
 
+      executeListeners(propStr);
       return true;
     },
   }) as T;
