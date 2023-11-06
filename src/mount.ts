@@ -1,5 +1,5 @@
 import { updateComponentInDom } from './updateComponentInDom';
 
-export const mount = (content: string, container: HTMLElement) => {
-  updateComponentInDom(container, content);
+export const mount = (content: string, id: string) => {
+  updateComponentInDom(id, content);
 };

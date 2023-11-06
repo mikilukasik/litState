@@ -3,6 +3,8 @@ import { LITSTATE } from './global';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const componentStates: { [key: string]: any } = {};
 const listenersById: Record<string, () => void> = {};
+const listenerRemoversById: Record<string, () => void> = {};
+
 let listenerBeingExecuted: string | null = null;
 let listenersOnHold: { [key: string]: () => void } | null = null;
 
@@ -11,11 +13,22 @@ export const addListener = <T>(listenerFunction: () => T, id: string): T => {
   listenerBeingExecuted = id;
 
   listenersById[id] = listenerFunction;
+  listenerRemoversById[id] = () => delete listenersById[id];
+
   const result = listenerFunction();
 
   listenerBeingExecuted = parentListener;
 
   return result;
+};
+
+export const removeListener = (id: string): void => {
+  try {
+    listenerRemoversById[id]();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Could not remove listener', e);
+  }
 };
 
 export const batchUpdate = (updater: () => void) => {
@@ -28,13 +41,14 @@ export const batchUpdate = (updater: () => void) => {
 };
 
 export const createState = <T>(_stateTarget: T): T => {
-  if (!LITSTATE.componentBeingRendered) return createNewState(_stateTarget);
+  if (!LITSTATE.componentBeingRendered) return createNewState(_stateTarget); // creates a global state
+
   if (componentStates[LITSTATE.componentBeingRendered])
-    return componentStates[LITSTATE.componentBeingRendered] as T;
+    return componentStates[LITSTATE.componentBeingRendered] as T; // returns existing local state
 
   componentStates[LITSTATE.componentBeingRendered] =
     createNewState(_stateTarget);
-  return componentStates[LITSTATE.componentBeingRendered];
+  return componentStates[LITSTATE.componentBeingRendered]; // creates new local state
 };
 
 const createNewState = <T>(_stateTarget: T): T => {
@@ -71,15 +85,22 @@ const createNewState = <T>(_stateTarget: T): T => {
     get: (target, prop) => {
       const propStr = prop.toString();
       if (listenerBeingExecuted && propStr !== 'constructor') {
-        if (
-          // TODO: figure out how constructor makes it here and errors
-          !(listenersSubscribedTo[propStr] || []).includes(
-            listenerBeingExecuted
-          )
-        ) {
-          if (!listenersSubscribedTo[propStr])
-            listenersSubscribedTo[propStr] = [];
+        if (!listenersSubscribedTo[propStr])
+          listenersSubscribedTo[propStr] = [];
+
+        if (!listenersSubscribedTo[propStr].includes(listenerBeingExecuted)) {
           listenersSubscribedTo[propStr].push(listenerBeingExecuted);
+
+          const existingListenerRemover =
+            listenerRemoversById[listenerBeingExecuted];
+
+          const currentListenerId = listenerBeingExecuted;
+          listenerRemoversById[listenerBeingExecuted] = () => {
+            listenersSubscribedTo[propStr] = listenersSubscribedTo[
+              propStr
+            ].filter(id => id !== currentListenerId);
+            existingListenerRemover();
+          };
         }
       }
 

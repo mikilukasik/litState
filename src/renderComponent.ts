@@ -1,14 +1,12 @@
 import { LITSTATE } from './global';
 import { addListener } from './state';
 import { ComponentDefiner, ObjectWithOptionalId, PropsWithId } from './types';
-import { recursivelyUpdateComponentInDom } from './recursivelyUpdateComponentInDom';
-
-const currentPropsProxy = LITSTATE.componentsCurrentProps;
+import { updateComponentInDom } from './updateComponentInDom';
 
 export const renderComponent = (
   id: string | number,
   component: ComponentDefiner,
-  props: PropsWithId,
+  props?: PropsWithId,
   attributes?:
     | ObjectWithOptionalId
     | ((props: Record<string, unknown>) => ObjectWithOptionalId)
@@ -18,7 +16,10 @@ export const renderComponent = (
   const parsedAttributes: ObjectWithOptionalId = attributes
     ? typeof attributes === 'object'
       ? attributes
-      : attributes(props)
+      : attributes(
+          props ||
+            LITSTATE.componentsCurrentProps[componentId] || { id: componentId }
+        )
     : {};
 
   const renderedString = addListener(() => {
@@ -29,11 +30,15 @@ export const renderComponent = (
       parsedAttributes
     )
       .map(key => `${key}="${parsedAttributes[key]}"`)
-      .join(' ')}>${component(props || currentPropsProxy[componentId])}</span>`;
+      .join(' ')}>${component(
+      props ||
+        LITSTATE.componentsCurrentProps[componentId] || { id: componentId }
+    )}</span>`;
 
-    LITSTATE.componentsCurrentProps[componentId] = props;
+    LITSTATE.componentsCurrentProps[componentId] = props ||
+      LITSTATE.componentsCurrentProps[componentId] || { id: componentId };
 
-    recursivelyUpdateComponentInDom(componentId.toString(), renderedString);
+    updateComponentInDom(componentId.toString(), renderedString);
 
     LITSTATE.componentBeingRendered = parentId;
 
