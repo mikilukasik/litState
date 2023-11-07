@@ -1,8 +1,13 @@
 const idCache: Record<string, string> = {};
 let nextId = 0;
 
+export const resetId = () => {
+  nextId = 0;
+  Object.keys(idCache).forEach(key => delete idCache[key]);
+};
+
 export const getLongIdFromStack = (stack: string) => {
-  const longId = [2, 3]
+  const longId = [2, 3, 4, 5]
     .map(row =>
       stack
         ?.split('\n')
@@ -15,17 +20,17 @@ export const getLongIdFromStack = (stack: string) => {
   return longId;
 };
 
-export const getComponentIdFromStack = () => {
+export const getIdFromStack = () => {
   const { stack = '' } = new Error();
   const longId = getLongIdFromStack(stack);
 
   if (!longId) {
     console.warn('Could not generate component id');
-    return Math.random().toString().replace('0.', 'lsCrnd');
+    return Math.random().toString().replace('0.', 'lsRndId');
   }
 
   if (!idCache[longId]) {
-    idCache[longId] = `lsC${nextId}`;
+    idCache[longId] = `ls${nextId}`;
     nextId += 1;
   }
 

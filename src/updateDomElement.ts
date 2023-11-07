@@ -41,6 +41,11 @@ export const updateDomElement = (
 
   if (source.isEqualNode(target)) return;
 
+  if (source.nodeType !== target.nodeType) {
+    target.replaceWith(source.cloneNode(true));
+    return;
+  }
+
   const sourceChildren = Array.from(source.childNodes) as NodeArray;
   const targetChildren = Array.from(target.childNodes) as NodeArray;
 

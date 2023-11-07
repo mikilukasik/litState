@@ -196,7 +196,9 @@ describe('stateManagement', () => {
   it('should handle error during listener removal', () => {
     const consoleErrorMock = jest
       .spyOn(console, 'error')
-      .mockImplementation(() => {});
+      .mockImplementation(() => {
+        // do nothing
+      });
 
     removeListener('nonExistentListener');
     expect(consoleErrorMock).toHaveBeenCalled();

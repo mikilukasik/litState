@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export type Props = { [key: string]: any };
+export type Props = Record<string, any>;
 export type PropsWithId = Props & { id: string | number };
 
 // export type Component = (id: string, props: Props) => string;

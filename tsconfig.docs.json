@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir": "docs",
+    "module": "ESNext",
+    "sourceMap": true
+  },
+  "include": ["docs_src/**/*"],
+  "exclude": ["node_modules", "dist", "src", "test"]
+}

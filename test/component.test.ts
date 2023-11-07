@@ -1,13 +1,13 @@
 import { component } from '../src/component';
 import { renderComponent } from '../src/renderComponent';
-import { getComponentIdFromStack } from '../src/getComponentIdFromStack';
+import { getIdFromStack } from '../src/getIdFromStack';
 
 jest.mock('../src/renderComponent', () => ({
   renderComponent: jest.fn(() => 'rendered component'),
 }));
 
-jest.mock('../src/getComponentIdFromStack', () => ({
-  getComponentIdFromStack: jest.fn(),
+jest.mock('../src/getIdFromStack', () => ({
+  getIdFromStack: jest.fn(),
 }));
 
 describe('component', () => {
@@ -25,7 +25,7 @@ describe('component', () => {
 
     component(functionalComponent, attributes)(customProps);
 
-    expect(getComponentIdFromStack).not.toHaveBeenCalled();
+    expect(getIdFromStack).not.toHaveBeenCalled();
     expect(renderComponent).toHaveBeenCalledWith(
       mockId,
       functionalComponent,
@@ -35,11 +35,11 @@ describe('component', () => {
   });
 
   it('should generate an id if not provided in props', () => {
-    (getComponentIdFromStack as jest.Mock).mockReturnValue(mockId);
+    (getIdFromStack as jest.Mock).mockReturnValue(mockId);
 
     component(functionalComponent, attributes)(props);
 
-    expect(getComponentIdFromStack).toHaveBeenCalled();
+    expect(getIdFromStack).toHaveBeenCalled();
     expect(renderComponent).toHaveBeenCalledWith(
       mockId,
       functionalComponent,
@@ -62,7 +62,7 @@ describe('component', () => {
   });
 
   it('should pass all props correctly', () => {
-    (getComponentIdFromStack as jest.Mock).mockReturnValue(mockId);
+    (getIdFromStack as jest.Mock).mockReturnValue(mockId);
     const allProps = { ...props, id: mockId };
 
     component(functionalComponent, attributes)(props);
@@ -76,11 +76,11 @@ describe('component', () => {
   });
 
   it('should use default props if none are provided', () => {
-    (getComponentIdFromStack as jest.Mock).mockReturnValue(mockId);
+    (getIdFromStack as jest.Mock).mockReturnValue(mockId);
 
     component(functionalComponent, attributes)();
 
-    expect(getComponentIdFromStack).toHaveBeenCalled();
+    expect(getIdFromStack).toHaveBeenCalled();
 
     expect(renderComponent).toHaveBeenCalledWith(
       mockId,

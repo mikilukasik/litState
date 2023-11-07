@@ -127,4 +127,15 @@ describe('updateDomElement', () => {
 
     expect(target.textContent).toBe('Target Text');
   });
+
+  it('should replace target with source if they are different node types', () => {
+    source = document.createTextNode(
+      'This is a source text node'
+    ) as unknown as Element;
+
+    updateDomElement(source, target);
+
+    expect(document.body.contains(target)).toBeFalsy();
+    expect(document.body.textContent).toContain('This is a source text node');
+  });
 });

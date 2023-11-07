@@ -1,7 +1,8 @@
 import {
-  getComponentIdFromStack,
+  getIdFromStack,
   getLongIdFromStack,
-} from '../src/getComponentIdFromStack';
+  resetId,
+} from '../src/getIdFromStack';
 
 const originalLocation = window.location;
 const originalError = Error;
@@ -18,7 +19,7 @@ afterAll(() => {
   window.location = originalLocation;
 });
 
-describe('getComponentIdFromStack', () => {
+describe('getIdFromStack', () => {
   let mockErrorInstance: Error;
   let mockStack: string;
 
@@ -46,8 +47,8 @@ describe('getComponentIdFromStack', () => {
       get: () => undefined,
     });
 
-    const id = getComponentIdFromStack();
-    expect(id).toMatch(/^lsCrnd\d+$/);
+    const id = getIdFromStack();
+    expect(id).toMatch(/^lsRndId\d+$/);
   });
 
   it('should warn when it cannot generate an ID', () => {
@@ -61,7 +62,7 @@ describe('getComponentIdFromStack', () => {
         // Do nothing
       });
 
-    getComponentIdFromStack();
+    getIdFromStack();
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       'Could not generate component id'
@@ -71,9 +72,9 @@ describe('getComponentIdFromStack', () => {
   });
 
   it('should cache and return the same ID for the same stack trace', () => {
-    const id1 = getComponentIdFromStack();
-    const id2 = getComponentIdFromStack();
-    const id3 = getComponentIdFromStack();
+    const id1 = getIdFromStack();
+    const id2 = getIdFromStack();
+    const id3 = getIdFromStack();
 
     expect(id1).toEqual(id2);
     expect(id1).toEqual(id3);
@@ -94,18 +95,18 @@ describe('getComponentIdFromStack', () => {
     Object.defineProperty(mockErrorInstance, 'stack', {
       get: () => mockStack1,
     });
-    const id1 = getComponentIdFromStack();
+    const id1 = getIdFromStack();
 
     Object.defineProperty(mockErrorInstance, 'stack', {
       get: () => mockStack2,
     });
-    const id2 = getComponentIdFromStack();
+    const id2 = getIdFromStack();
 
     expect(id1).not.toEqual(id2);
   });
 
   it('should increment the ID for new stack traces', () => {
-    const idOriginal = getComponentIdFromStack();
+    const idOriginal = getIdFromStack();
 
     const mockStackNew = `
       Error
@@ -117,14 +118,14 @@ describe('getComponentIdFromStack', () => {
       get: () => mockStackNew,
     });
 
-    const idNew = getComponentIdFromStack();
+    const idNew = getIdFromStack();
 
     expect(idNew).not.toEqual(idOriginal);
-    expect(idNew).toMatch(/lsC\d+/);
-    expect(idNew).not.toMatch(/^lsCrnd\d+$/);
+    expect(idNew).toMatch(/ls\d+/);
+    expect(idNew).not.toMatch(/^lsRndId\d+$/);
 
-    const originalNumericId = parseInt(idOriginal.replace('lsC', ''));
-    const newNumericId = parseInt(idNew.replace('lsC', ''));
+    const originalNumericId = parseInt(idOriginal.replace('ls', ''));
+    const newNumericId = parseInt(idNew.replace('ls', ''));
     expect(newNumericId).toBeGreaterThan(originalNumericId);
   });
 
@@ -133,7 +134,7 @@ describe('getComponentIdFromStack', () => {
       throw { message: 'Test error' };
     });
 
-    expect(() => getComponentIdFromStack()).toThrow('Test error');
+    expect(() => getIdFromStack()).toThrow('Test error');
 
     jest.restoreAllMocks();
   });
@@ -160,5 +161,21 @@ describe('getLongIdFromStack', () => {
     const stack = undefined;
     const longId = getLongIdFromStack(stack as unknown as string);
     expect(longId).toBe('');
+  });
+
+  it('should reset the internal counter and clear the cache used by getIdFromStack', () => {
+    resetId();
+
+    const id1 = getIdFromStack();
+    const id2 = getIdFromStack();
+
+    expect(id1).not.toBe(id2);
+
+    resetId();
+
+    const idAfterReset = getIdFromStack();
+
+    expect(idAfterReset).toBe(id1);
+    expect(idAfterReset).not.toBe(id2);
   });
 });

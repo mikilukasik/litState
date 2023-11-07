@@ -1,10 +1,12 @@
+import { getIdFromStack } from './getIdFromStack';
 import { LITSTATE } from './global';
 
 export const handler: (
-  handlerToDefine: (event: Event, elm: HTMLElement) => void
-) => string = handlerToDefine => {
+  handlerToDefine: (event: Event, elm: HTMLElement) => void,
+  id?: string | number
+) => string = (handlerToDefine, id) => {
   const componentId = LITSTATE.componentBeingRendered || 'global';
-  const handlerId = Math.random().toString().replace('0.', 'lsHandler');
+  const handlerId = `${getIdFromStack()}${id ? `-${id}` : ''}`;
 
   if (!LITSTATE.handlersPerComponent[componentId])
     LITSTATE.handlersPerComponent[componentId] = {};

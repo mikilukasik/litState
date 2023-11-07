@@ -1,134 +1,300 @@
-# LitState
+# litState
 
-LitState is a small and convenient frontend framework for building reactive web applications. It consists of a single file for the framework core and another file for components (Router and Link). LitState utilizes a recursive proxy-based state management system and reactive rendering to make developing web applications a breeze.
+## Overview
 
-## Features
+**litState** is a lightweight TypeScript framework for creating web applications quickly and efficiently. It provides:
 
-- Effortless state management with reactive rendering
-- Router and Link components for seamless navigation
-- Minimalistic and lightweight
-- Highly customizable
+- **Zero dependencies**: Streamlines your project setup.
+- **Simple API**: Easy to learn and use.
+- **Reactive Components**: Optimize your UI with precise updates.
+- **State Management**: Utilize proxies for effortless state handling.
+- **Fast Project Setup**: Ideal for small projects with its quick setup.
 
-## Getting Started
+## Installation
 
-1. Include `index.ts` and `Router.ts` in your project.
-2. Import the necessary components and functions from LitState:
+To get started, install litState using npm:
 
-   ```javascript
-   import { createState, component, html, handler, mount } from './index';
-   import { Router, Link } from './Router';
-   ```
+`npm install litstate`
 
 ## Usage
 
-### Creating a State
+### Setting Up Global State
 
-Create a new state using the `createState` function:
+Import and create a global state object:
 
 ```javascript
-export const globalState = createState({
-  counter: 0,
+import { createState } from 'litstate';
+
+const initialState = {
+  count: 0,
+};
+
+export const globalState = createState(initialState);
+```
+
+### Creating Components
+
+Build components that interact with the global state:
+
+```javascript
+import { component, html, handler } from 'litstate';
+import { globalState } from './globalState';
+
+export const Counter = component(() => {
+  return html`
+    <div>
+      <p>Count: ${globalState.count}</p>
+    </div>
+  `;
+});
+
+export const IncrementButton = component(() => {
+  const incrementHandler = handler(() => {
+    globalState.count++;
+  });
+
+  return html`
+    <div>
+      <button onclick="${incrementHandler}">Increment</button>
+    </div>
+  `;
 });
 ```
 
-### Creating a Component
+### Root Component
 
-Create a new component using the component function:
+Create a root component to render other components:
 
 ```javascript
-import { state } from './state';
+import { component, html } from 'litstate';
+import { Counter, IncrementButton } from './components';
 
-const Counter = component(
-  ({ label }) => html`
+export const App = component(() => {
+  return html` <div>${Counter()} ${IncrementButton()}</div> `;
+});
+```
+
+### Mounting the App
+
+Mount the root component to the DOM:
+
+```javascript
+import { mount } from 'litstate';
+import { App } from './App';
+
+// HTML element where the app will mount
+// <div id="app"></div>;
+
+// Mount the App component to the 'app' element
+mount(App, 'app');
+```
+
+### Component Function
+
+Define a reusable UI component:
+
+```javascript
+export const MyComponent = component(({ title, content }) => {
+  return html`
     <div>
-      <h1>${label} ${globalState.count}</h1>
+      <h1>${title}</h1>
+      <p>${content}</p>
     </div>
-  `
-);
+  `;
+});
 ```
 
-### Mounting a Component
-
-Mount a component into an HTML container:
+Instantiate the component with the desired props:
 
 ```javascript
-const container = document.getElementById('app');
-mount(Counter('counter-1', { label: 'Counter: ' }), container);
+import { MyComponent } from './MyComponent';
+
+export const App = component(() => {
+  return html`
+    <div>${MyComponent({ title: 'My Title', content: 'My Content' })}</div>
+  `;
+});
 ```
 
-### Updating State
+### State Management
 
-Modify the state to trigger a reactive render:
-
-```javascript
-state.counter = 1;
-```
-
-### Using handlers
-
-Use the handler method to create and attach handlers to the html components
+litState provides a straightforward state management system designed to enable both global and local states, leveraging the power of JavaScript proxies for reactivity. These states are deeply reactive due to the recursive use of proxies, ensuring updates are precise and components re-render only when necessary.
 
 ```javascript
-const Counter = component(
-  () => html`
+import {
+  createState,
+  addListener,
+  removeListener,
+  batchUpdate,
+  html,
+} from 'litstate';
+
+// Create a global state object
+export const appState = createState({
+  user: {
+    name: 'Jane Doe',
+    age: 25,
+  },
+  theme: 'light',
+  isLoggedIn: false,
+});
+
+// Create a component that uses the global and local states
+export const MyComponent = component(() => {
+  // Create a local state object
+  const localState = createState({
+    count: 0,
+  });
+
+  const incrementHandler = handler(() => {
+    // Update the local state
+    localState.count++;
+  });
+
+  const userNameSetter = handler(() => {
+    // Update the global state
+    appState.user.name = 'John Doe';
+  });
+
+  return html`
     <div>
-      <h1>${state.counter}</h1>
-      <button onclick="${handler(() => state.counter++)}">Increment</button>
-      <button onclick="${handler(() => state.counter--)}">Decrement</button>
+      <p>Global state: ${appState.user.name}</p>
+      <p>Local state: ${localState.count}</p>
+      <button onclick="${incrementHandler}">Increment</button>
+      <button onclick="${userNameSetter}">Set User Name</button>
     </div>
-  `
-);
+  `;
+});
+```
+
+State updates can be done from anywhere in your application, including outside of components:
+
+```javascript
+import { appState } from './appState';
+
+// Update the global state
+appState.user.name = 'John Doe';
+```
+
+### Batch State Updates
+
+Batch state updates are useful to prevent unnecessary re-renders. Multiple state updates can be batched together using the `batchUpdate` function. Components will only re-render once all state updates are complete.
+
+```javascript
+import { appState } from './appState';
+import { batchUpdate } from 'litstate';
+
+// Batch state updates
+batchUpdate(() => {
+  appState.user.name = 'John Doe';
+  appState.user.age = 30;
+});
+```
+
+### Adding and Removing Listeners
+
+To listen for state changes outside of components, use the `addListener` function. These listeners execute once upon creation, monitoring the accessed state properties, and are reinvoked whenever those properties undergo changes.
+
+```javascript
+import { appState } from './appState';
+import { addListener, removeListener } from 'litstate';
+
+// Create a listener with an ID
+addListener(() => {
+  console.log('User name:', appState.user.name);
+}, 'user-name-listener');
+
+// Later, remove the listener
+removeListener('user-name-listener');
+```
+
+### HTML Function
+
+Utilize the `html` function to create and manage dynamic HTML content:
+
+```javascript
+import { html } from 'litstate';
+
+export const Greeting = component(({ name }) => {
+  return html` <div>Hello, ${name}!</div> `;
+});
+```
+
+### Handler Function
+
+Handle events within your components:
+
+```javascript
+export const IncrementButton = component(() => {
+  const incrementHandler = handler((event, element) => {
+    console.log('Event:', event);
+    console.log('Element:', element);
+    globalState.count++;
+  });
+
+  return html`
+    <div>
+      <button onclick="${incrementHandler}">Increment</button>
+    </div>
+  `;
+});
+```
+
+### Mount Method
+
+Render your component into the DOM:
+
+```javascript
+// In your HTML file
+// <div id="app"></div>
+
+import { mount } from 'litstate';
+import { App } from './App';
+
+mount(App, 'app');
 ```
 
 ### Router and Link Components
 
-Use the Router and Link components with `navigate` Method:
+Implement client-side routing:
 
 ```javascript
-const Home = () => html`
-  <div>
-    <h1>Home</h1>
-    ${Link('link-to-about', { to: '/about', children: 'Go to About' })}
-  </div>
-`;
+import { Router, Link, navigate } from 'litstate/components';
+import { Home, About, NotFound } from './components';
 
-const About = () => html`
-  <div>
-    <h1>About</h1>
-    ${Link('link-to-home', { to: '/', children: 'Go to Home' })}
-  </div>
-`;
-
-const Header = ({ title }) => html`
-  <div>
-    <h1>${title}</h1>
-  </div>
-`;
-
-const App = () => html`
-  <div>${Header('app-header', { title: 'Hello world!' })}</div>
-  <div>
-    ${Router('app-router', {
-      routes: {
-        '/': Home,
-        '/about': About,
-        '*': () => html`<h1>404 Not Found</h1>`,
-      },
-    })}
-  </div>
-`;
-
-mount(App('main-app'), container);
-```
-
-Use the `navigate` method to programmatically change routes:
-
-```javascript
-const goToAbout = () => {
-  navigate('/about');
+const NavBar = () => {
+  return html`
+    <div>
+      ${Link({ to: '/', children: 'Home' })} ${Link({
+        to: '/about',
+        children: 'About',
+      })}
+    </div>
+  `;
 };
+
+const routes = {
+  '/': Home,
+  '/about': About,
+  '*': NotFound,
+};
+
+const App = () => {
+  return html`
+    <div>
+      <Router routes=${routes} />
+    </div>
+  `;
+};
+
+// Use navigate to change routes programmatically
+navigate('/about');
 ```
 
-### License
+## License
 
-This project is open-source and available under the MIT License.
+MIT License
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

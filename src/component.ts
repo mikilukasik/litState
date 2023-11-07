@@ -1,5 +1,5 @@
 import { renderComponent } from './renderComponent';
-import { getComponentIdFromStack } from './getComponentIdFromStack';
+import { getIdFromStack } from './getIdFromStack';
 
 import {
   Component,
@@ -15,7 +15,7 @@ export const component = (
     | ((props: Record<string, unknown>) => ObjectWithOptionalId)
 ): Component => {
   const renderer: Component = (_props = {}) => {
-    const id = _props.id || getComponentIdFromStack();
+    const id = _props.id || getIdFromStack();
 
     const props: PropsWithId = { ..._props, id };
 

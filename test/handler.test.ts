@@ -1,7 +1,10 @@
 import { handler } from '../src/handler'; // Adjust the import path as needed.
 import { LITSTATE } from '../src/global';
+import { resetId } from '../src/getIdFromStack';
 
-jest.spyOn(Math, 'random').mockReturnValue(0.123456789);
+jest.mock('../src/getIdFromStack', () => ({
+  getIdFromStack: jest.fn(() => 'mockedId'),
+}));
 
 describe('handler', () => {
   beforeEach(() => {
@@ -16,7 +19,7 @@ describe('handler', () => {
     const handlerString = handler(mockHandlerFunction);
 
     expect(handlerString).toBe(
-      "window.LITSTATE.handlersPerComponent['testComponent']['lsHandler123456789'](event, this)"
+      "window.LITSTATE.handlersPerComponent['testComponent']['mockedId'](event, this)"
     );
   });
 
@@ -27,7 +30,7 @@ describe('handler', () => {
     handler(mockHandlerFunction);
 
     expect(
-      LITSTATE.handlersPerComponent['testComponent']['lsHandler123456789']
+      LITSTATE.handlersPerComponent['testComponent']['mockedId']
     ).toBeDefined();
   });
 
@@ -37,11 +40,9 @@ describe('handler', () => {
     const handlerString = handler(mockHandlerFunction);
 
     expect(handlerString).toBe(
-      "window.LITSTATE.handlersPerComponent['global']['lsHandler123456789'](event, this)"
+      "window.LITSTATE.handlersPerComponent['global']['mockedId'](event, this)"
     );
-    expect(
-      LITSTATE.handlersPerComponent['global']['lsHandler123456789']
-    ).toBeDefined();
+    expect(LITSTATE.handlersPerComponent['global']['mockedId']).toBeDefined();
   });
 
   it('should call the handler function when invoked', () => {
@@ -68,6 +69,22 @@ describe('handler', () => {
     simulatedHandlerInvocation(mockEvent);
 
     expect(mockHandlerFunction).toHaveBeenCalledWith(mockEvent, mockElement);
+  });
+
+  it('should append the provided id to the handlerId if given', () => {
+    const mockHandlerFunction = jest.fn();
+    const providedId = 'unique123';
+    LITSTATE.componentBeingRendered = 'testComponent';
+
+    const handlerString = handler(mockHandlerFunction, providedId);
+
+    expect(handlerString).toBe(
+      `window.LITSTATE.handlersPerComponent['testComponent']['mockedId-unique123'](event, this)`
+    );
+
+    expect(
+      LITSTATE.handlersPerComponent['testComponent'][`mockedId-${providedId}`]
+    ).toBeDefined();
   });
 
   afterAll(() => {
