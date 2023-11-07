@@ -11,7 +11,9 @@
     "build": "npm run build:lib && npm run build:docs && npm run copy:docs",
     "watch": "tsc -w",
     "watch:docs": "chokidar \"docs_src/**/*\" \"src/**/*\" -c \"npm run build:docs && npm run copy:docs\"",
-    "test": "jest --coverage --runInBand --coverageThreshold='{\"global\": {\"branches\": 70, \"functions\": 100, \"lines\": 90, \"statements\": 90}}'"
+    "test": "jest --coverage --runInBand --coverageThreshold='{\"global\": {\"branches\": 70, \"functions\": 100, \"lines\": 90, \"statements\": 90}}'",
+    "precommit": "npm run test",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
