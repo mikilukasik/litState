@@ -70,7 +70,7 @@ export const StateManagement = component(
       Initialize state management:
       <pre>
         <code class="language-typescript">
-import { createState } from 'litstate';
+import { createState } from 'litstate-app';
 
 export const appState = createState({
   user: null,
@@ -83,7 +83,7 @@ export const appState = createState({
       Listen to state changes in your components:
       <pre>
         <code class="language-typescript">
-import { component, html, handler } from 'litstate';
+import { component, html, handler } from 'litstate-app';
 import { appState } from './appState';
 
 export const UserInfo = component(() => {
@@ -128,7 +128,7 @@ const login = (username) => {
       a unique id for each listener to maintain the correct tracking.
       <pre>
         <code class="language-typescript">
-import { addListener, removeListener } from 'litstate';
+import { addListener, removeListener } from 'litstate-app';
 import { appState } from './appState';
 
 addListener(appState, () => {
@@ -146,7 +146,7 @@ removeListener('userLoginListener');
       Components can also have their own local state:
       <pre>
         <code class="language-typescript">
-import { component, html, handler } from 'litstate';
+import { component, html, handler } from 'litstate-app';
 
 export const Counter = component(() => {
   const state = createState({ count: 0 });

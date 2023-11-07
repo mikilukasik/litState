@@ -14,7 +14,7 @@
 
 To get started, install litState using npm:
 
-`npm install litstate`
+`npm install litstate-app`
 
 ## Usage
 
@@ -23,7 +23,7 @@ To get started, install litState using npm:
 Import and create a global state object:
 
 ```javascript
-import { createState } from 'litstate';
+import { createState } from 'litstate-app';
 
 const initialState = {
   count: 0,
@@ -37,7 +37,7 @@ export const globalState = createState(initialState);
 Build components that interact with the global state:
 
 ```javascript
-import { component, html, handler } from 'litstate';
+import { component, html, handler } from 'litstate-app';
 import { globalState } from './globalState';
 
 export const Counter = component(() => {
@@ -66,7 +66,7 @@ export const IncrementButton = component(() => {
 Create a root component to render other components:
 
 ```javascript
-import { component, html } from 'litstate';
+import { component, html } from 'litstate-app';
 import { Counter, IncrementButton } from './components';
 
 export const App = component(() => {
@@ -79,7 +79,7 @@ export const App = component(() => {
 Mount the root component to the DOM:
 
 ```javascript
-import { mount } from 'litstate';
+import { mount } from 'litstate-app';
 import { App } from './App';
 
 // HTML element where the app will mount
@@ -150,7 +150,7 @@ import {
   removeListener,
   batchUpdate,
   html,
-} from 'litstate';
+} from 'litstate-app';
 
 // Create a global state object
 export const appState = createState({
@@ -205,7 +205,7 @@ Batch state updates are useful to prevent unnecessary re-renders. Multiple state
 
 ```javascript
 import { appState } from './appState';
-import { batchUpdate } from 'litstate';
+import { batchUpdate } from 'litstate-app';
 
 // Batch state updates
 batchUpdate(() => {
@@ -220,7 +220,7 @@ To listen for state changes outside of components, use the `addListener` functio
 
 ```javascript
 import { appState } from './appState';
-import { addListener, removeListener } from 'litstate';
+import { addListener, removeListener } from 'litstate-app';
 
 // Create a listener with an ID
 addListener(() => {
@@ -236,7 +236,7 @@ removeListener('user-name-listener');
 Utilize the `html` function to create and manage dynamic HTML content:
 
 ```javascript
-import { html } from 'litstate';
+import { html } from 'litstate-app';
 
 export const Greeting = component(({ name }) => {
   return html` <div>Hello, ${name}!</div> `;
@@ -271,7 +271,7 @@ Render your component into the DOM:
 // In your HTML file
 // <div id="app"></div>
 
-import { mount } from 'litstate';
+import { mount } from 'litstate-app';
 import { App } from './App';
 
 mount(App, 'app');
@@ -282,7 +282,7 @@ mount(App, 'app');
 Implement client-side routing:
 
 ```javascript
-import { Router, Link, navigate } from 'litstate/components';
+import { Router, Link, navigate } from 'litstate-app/components';
 import { Home, About, NotFound } from './components';
 
 const NavBar = () => {

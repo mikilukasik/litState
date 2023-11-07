@@ -15,7 +15,7 @@ npm install litstate
       Create a global state object:
       <pre>
         <code class="language-typescript">
-import { createState } from 'litstate';
+import { createState } from 'litstate-app';
 
 const initialState = {
   count: 0,
@@ -28,7 +28,7 @@ export const globalState = createState(initialState);
       Create multiple components that use the global state:
       <pre>
         <code class="language-typescript">
-import { component, html, handler } from 'litstate';
+import { component, html, handler } from 'litstate-app';
 import { globalState } from './globalState';
 
 export const Counter = component(() => {
@@ -56,7 +56,7 @@ export const IncrementButton = component(() => {
       Create a root component that renders the other components:
       <pre>
         <code class="language-typescript">
-import { component, html } from 'litstate';
+import { component, html } from 'litstate-app';
 import { Counter } from './Counter';
 import { IncrementButton } from './IncrementButton';
 
@@ -81,7 +81,7 @@ export const App = component(() => {
       Mount the root component to the container element:
       <pre>
         <code class="language-typescript">
-import { mount } from 'litstate';
+import { mount } from 'litstate-app';
 import { App } from './App';
 
 mount(App, 'app');

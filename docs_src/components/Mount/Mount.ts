@@ -26,7 +26,7 @@ export const Mount = component(() => {
 &lt;div id="app">&lt;/div>
 
 // Import the mount function and your root component
-import { mount } from 'litstate';
+import { mount } from 'litstate-app';
 import { App } from './App';
 
 // Mount the root component into the container

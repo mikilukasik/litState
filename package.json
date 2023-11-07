@@ -1,9 +1,9 @@
 {
-  "name": "litstate",
+  "name": "litstate-app",
   "version": "0.1.0",
-  "description": "tiny components based frontend framework with state management",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "TypeScript framework for fast web app creation",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "build:lib": "tsc",
     "build:docs": "rollup -c",
@@ -19,9 +19,21 @@
     "type": "git",
     "url": "git+https://github.com/mikilukasik/litstate.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "typescript",
+    "framework",
+    "web-app",
+    "state-management",
+    "reactivity",
+    "components",
+    "ui-components",
+    "proxies",
+    "fast-setup",
+    "lightweight",
+    "web-development"
+  ],
+  "author": "Miklos Lukasik",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/mikilukasik/litstate/issues"
   },

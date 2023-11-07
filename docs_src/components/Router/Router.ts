@@ -45,7 +45,7 @@ export const Router = component(() => {
       <pre>
         <code class="language-javascript">
 
-import { Router, Link, navigate } from 'litstate/components';
+import { Router, Link, navigate } from 'litstate-app/components';
 import { Home } from './Home';
 import { About } from './About';
 import { NotFound } from './NotFound';
