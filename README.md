@@ -10,6 +10,8 @@
 - **State Management**: Utilize proxies for effortless state handling.
 - **Fast Project Setup**: Ideal for small projects with its quick setup.
 
+Check out the [full documentation](https://mikilukasik.github.io/litState/) or for more details.
+
 ## Installation
 
 To get started, install litState using npm:
