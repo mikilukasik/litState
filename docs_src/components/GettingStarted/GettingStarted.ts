@@ -8,7 +8,7 @@ export const GettingStarted = component(
       Install the package:
       <pre>
         <code class="language-bash">
-npm install litstate
+npm install litstate-app
         </code>
       </pre>
 

@@ -1,8 +1,6 @@
 import { component, html } from '../../../src';
 
-export const Component = component(props => {
-  const { id } = props; // Accessing props and id inside the component
-
+export const Component = component(() => {
   return html`
     <div class="component">
       <h2>Component Function</h2>
