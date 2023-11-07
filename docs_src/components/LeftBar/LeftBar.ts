@@ -6,7 +6,10 @@ export const leftBarState = createState({
 
 export const LeftBar = component(
   () => html`
-    <div class="left-bar${leftBarState.isOpen ? ' active' : ''}">
+    <div
+      id="left-bar-container"
+      class="left-bar${leftBarState.isOpen ? ' active' : ''}"
+    >
       <a href="#">Home</a>
       <a href="#getting-started">Getting Started</a>
       <a href="#component">Component</a>

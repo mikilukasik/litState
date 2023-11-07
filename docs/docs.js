@@ -321,8 +321,17 @@ var Router = component(function () {
 });
 var templateObject_1$6;
 
+var leftBarState = createState({
+    isOpen: false,
+});
+var LeftBar = component(function () { return html(templateObject_1$5 || (templateObject_1$5 = __makeTemplateObject(["\n    <div\n      id=\"left-bar-container\"\n      class=\"left-bar", "\"\n    >\n      <a href=\"#\">Home</a>\n      <a href=\"#getting-started\">Getting Started</a>\n      <a href=\"#component\">Component</a>\n      <a href=\"#state-management\">State Management</a>\n      <a href=\"#html\">literal HTML</a>\n      <a href=\"#handler\">Handler</a>\n      <a href=\"#mount\">Mount</a>\n      <a href=\"#router\">Router</a>\n    </div>\n  "], ["\n    <div\n      id=\"left-bar-container\"\n      class=\"left-bar", "\"\n    >\n      <a href=\"#\">Home</a>\n      <a href=\"#getting-started\">Getting Started</a>\n      <a href=\"#component\">Component</a>\n      <a href=\"#state-management\">State Management</a>\n      <a href=\"#html\">literal HTML</a>\n      <a href=\"#handler\">Handler</a>\n      <a href=\"#mount\">Mount</a>\n      <a href=\"#router\">Router</a>\n    </div>\n  "])), leftBarState.isOpen ? ' active' : ''); });
+var templateObject_1$5;
+
 var Content = component(function () {
-    return html(templateObject_1$5 || (templateObject_1$5 = __makeTemplateObject(["\n      <div class=\"content\">\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n      </div>\n    "], ["\n      <div class=\"content\">\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n      </div>\n    "])), ContentCard({ sectionName: 'home', children: Home() }), ContentCard({
+    var leftBarCloser = handler(function () {
+        leftBarState.isOpen = false;
+    });
+    return html(templateObject_1$4 || (templateObject_1$4 = __makeTemplateObject(["\n    <div class=\"content\" onclick=\"", "\">\n      ", "\n      ", "\n      ", "\n      ", "\n      ", "\n      ", "\n      ", "\n      ", "\n    </div>\n  "], ["\n    <div class=\"content\" onclick=\"", "\">\n      ", "\n      ", "\n      ", "\n      ", "\n      ", "\n      ", "\n      ", "\n      ", "\n    </div>\n  "])), leftBarCloser, ContentCard({ sectionName: 'home', children: Home() }), ContentCard({
         sectionName: 'getting-started',
         children: GettingStarted(),
     }), ContentCard({ sectionName: 'component', children: Component() }), ContentCard({
@@ -330,12 +339,6 @@ var Content = component(function () {
         children: StateManagement(),
     }), ContentCard({ sectionName: 'html', children: Html() }), ContentCard({ sectionName: 'handler', children: Handler() }), ContentCard({ sectionName: 'mount', children: Mount() }), ContentCard({ sectionName: 'router', children: Router() }));
 });
-var templateObject_1$5;
-
-var leftBarState = createState({
-    isOpen: false,
-});
-var LeftBar = component(function () { return html(templateObject_1$4 || (templateObject_1$4 = __makeTemplateObject(["\n    <div class=\"left-bar", "\">\n      <a href=\"#\">Home</a>\n      <a href=\"#getting-started\">Getting Started</a>\n      <a href=\"#component\">Component</a>\n      <a href=\"#state-management\">State Management</a>\n      <a href=\"#html\">literal HTML</a>\n      <a href=\"#handler\">Handler</a>\n      <a href=\"#mount\">Mount</a>\n      <a href=\"#router\">Router</a>\n    </div>\n  "], ["\n    <div class=\"left-bar", "\">\n      <a href=\"#\">Home</a>\n      <a href=\"#getting-started\">Getting Started</a>\n      <a href=\"#component\">Component</a>\n      <a href=\"#state-management\">State Management</a>\n      <a href=\"#html\">literal HTML</a>\n      <a href=\"#handler\">Handler</a>\n      <a href=\"#mount\">Mount</a>\n      <a href=\"#router\">Router</a>\n    </div>\n  "])), leftBarState.isOpen ? ' active' : ''); });
 var templateObject_1$4;
 
 var Hamburger = component(function () {
