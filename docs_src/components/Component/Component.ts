@@ -21,13 +21,6 @@ export const Component = component(props => {
         accessible within the component as the first argument to the function.
       </p>
 
-      <h3>Usage of Component ID</h3>
-      <p>
-        The component's unique identifier, or <code>id</code>, is automatically
-        attached to the props object. This allows for easy access to the
-        component's ID within the component function.
-      </p>
-
       <h3>Defining a Component</h3>
       <pre>
         <code class="language-javascript">
@@ -54,6 +47,45 @@ html\`
 \`;
         </code>
       </pre>
+
+      <h3>Usage of Component ID</h3>
+      <p>
+        The component's unique identifier, <code>id</code>, can be included in
+        the props object. If not provided, the <code>id</code> is automatically
+        generated based on the component's position in the call stack and is
+        appended to the props object, facilitating straightforward access within
+        the component function.
+      </p>
+      <p>
+        When instantiating multiple instances of a component within a loop, it's
+        crucial to assign a distinct <code>id</code> prop to each. This
+        <code>id</code> is critical because, without it, components rendered in
+        a loop could share identical stack traces, potentially causing rendering
+        conflicts.
+      </p>
+
+      <pre>
+        <code class="language-javascript">
+import { component, html } from '../../../src';
+
+export const LoopComponent = component(props => {
+  const { id } = props; // Destructure the id from props if needed
+
+  return html\`
+    &lt;div>
+      &lt;!-- some HTML -->
+    &lt;/div>
+  \`;
+});
+
+// Use the component in a loop with unique 'id' props
+html\`
+  \${yourArray.map((item, index) =>
+    LoopComponent({ ...item, id: item.uniqueId || index })
+  )}
+\`;
+</code>
+</pre>
     </div>
   `;
 });

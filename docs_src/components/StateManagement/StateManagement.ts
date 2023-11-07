@@ -45,7 +45,10 @@ export const StateManagement = component(
         component lifecycles, you can use the <code>addListener</code> and
         <code>removeListener</code> methods. These listeners execute once upon
         creation, monitoring the accessed state properties, and are reinvoked
-        whenever those properties undergo changes.
+        whenever those properties undergo changes. These listeners do not always
+        require a unique identifier. However, assigning a unique ID is necessary
+        when you intend to remove them later or if they are within loops to
+        prevent duplicates.
       </p>
 
       <h3>Deeply Nested Proxies</h3>
@@ -121,7 +124,8 @@ const login = (username) => {
       You can also listen to state changes from outside of components. These
       listeners are triggered once upon being added, subscribing to the keys
       they reference. They will be executed again whenever any of the subscribed
-      keys are modified.
+      keys are modified. When creating listeners within loops, ensure to provide
+      a unique id for each listener to maintain the correct tracking.
       <pre>
         <code class="language-typescript">
 import { addListener, removeListener } from 'litstate';
@@ -132,7 +136,7 @@ addListener(appState, () => {
   if (user) {
     console.log('User logged in:', user.name);
   }
-}, 'userLoginListener');
+}, 'userLoginListener'); // The ID is optional unless you need to remove the listener later, or it is within a loop
 
 // Later, remove the listener
 removeListener('userLoginListener');

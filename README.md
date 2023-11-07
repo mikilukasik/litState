@@ -116,6 +116,29 @@ export const App = component(() => {
 });
 ```
 
+The component's unique identifier, id, can be included in the props object. If not provided, the id is automatically generated based on the component's position in the call stack and is appended to the props. When defining components that may be instantiated multiple times within a loop, it's important to provide an id prop to ensure each instance maintains a unique identity:
+
+```javascript
+import { component, html } from '../../../src';
+
+export const LoopComponent = component(props => {
+  const { id } = props; // Destructure the id from props if needed
+
+  return html`
+    <div>
+      <!-- some HTML -->
+    </div>
+  `;
+});
+
+// Use the component in a loop with unique 'id' props
+html`
+  ${yourArray.map((item, index) =>
+    LoopComponent({ ...item, id: item.uniqueId || index })
+  )}
+`;
+```
+
 ### State Management
 
 litState provides a straightforward state management system designed to enable both global and local states, leveraging the power of JavaScript proxies for reactivity. These states are deeply reactive due to the recursive use of proxies, ensuring updates are precise and components re-render only when necessary.
@@ -193,7 +216,7 @@ batchUpdate(() => {
 
 ### Adding and Removing Listeners
 
-To listen for state changes outside of components, use the `addListener` function. These listeners execute once upon creation, monitoring the accessed state properties, and are reinvoked whenever those properties undergo changes.
+To listen for state changes outside of components, use the `addListener` function. These listeners execute once upon creation, monitoring the accessed state properties, and are reinvoked whenever those properties undergo changes. When creating listeners within loops or multiple instances, ensure to provide a unique id for each listener to maintain the correct tracking and to provide the capability to remove them individually if needed.
 
 ```javascript
 import { appState } from './appState';
@@ -202,7 +225,7 @@ import { addListener, removeListener } from 'litstate';
 // Create a listener with an ID
 addListener(() => {
   console.log('User name:', appState.user.name);
-}, 'user-name-listener');
+}, 'user-name-listener'); // The ID is optional unless you need to remove the listener later, or it is within a loop
 
 // Later, remove the listener
 removeListener('user-name-listener');
