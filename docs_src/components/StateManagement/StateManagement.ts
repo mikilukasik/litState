@@ -131,7 +131,7 @@ const login = (username) => {
 import { addListener, removeListener } from 'litstate-app';
 import { appState } from './appState';
 
-addListener(appState, () => {
+addListener(() => {
   const { user } = appState;
   if (user) {
     console.log('User logged in:', user.name);
